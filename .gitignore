@@ -23,6 +23,9 @@
 .idea
 cmake-build-debug
 
+# Build intermediates
 build
 bin
 
+# Test outputs
+HW*.png
