@@ -7,8 +7,18 @@
 
 # collect source files
 
-file( GLOB  hdr *.hpp *.h )
-file( GLOB  cu  *.cu)
+file( GLOB  HEADERS *.hpp *.h )
+file( GLOB  CUDA_SRC  *.cu)
 SET (HW1_files main.cpp reference_calc.cpp compare.cpp)
 
-CUDA_ADD_EXECUTABLE(HW1 ${HW1_files} ${hdr} ${cu})
+add_executable(problem_set_1 ${CUDA_SRC} ${HW1_files})
+
+set_target_properties(
+        problem_set_1
+        PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON
+)
+target_link_libraries(
+        problem_set_1
+        ${OpenCV_LIBS}
+)

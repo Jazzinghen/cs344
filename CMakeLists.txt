@@ -17,7 +17,7 @@ endif()
 
 find_package(OpenCV REQUIRED)
 
-link_libraries(${OpenCV_LIBS} )
+include_directories(${OpenCV_INCLUDE_DIRS} ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 set (EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")
 
