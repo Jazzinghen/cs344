@@ -24,6 +24,10 @@
 # Golden standards
 !*.gold
 
+# Image data
+!*.jpg
+!*.png
+
 # Source files
 !*.cpp
 !*.h
