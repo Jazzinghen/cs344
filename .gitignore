@@ -1,5 +1,15 @@
 # Let's first ignore EVERYTHING
-*
+/*
+
+# Don't ignore directories
+!Final/
+!"Lesson Code Snippets"/
+!"Lesson Slides"/
+!"Problem Sets"/
+!"Student Contributions"/
+
+# This file
+!.gitignore
 
 # Documentation
 !*.md
