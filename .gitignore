@@ -1,31 +1,20 @@
-# Object files
-*.o
+# Let's first ignore EVERYTHING
+*
 
-# Libraries
-*.lib
-*.a
+# Documentation
+!*.md
+!*.pdf
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# CMAKE
+!CMakeLists.txt
 
-# Executables
-*.exe
-*.out
-*.app
+# Standard Makefiles
+!Makefile
 
-# OS X stuff
-.DS_Store
+# Golden standards
+!*.gold
 
-# CLion stuff
-.idea
-cmake-build-debug
-
-# Build intermediates
-build
-bin
-
-# Test outputs
-HW*.png
+# Source files
+!*.cpp
+!*.h
+!*.cu 
