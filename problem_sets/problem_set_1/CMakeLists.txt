@@ -9,7 +9,7 @@
 
 file( GLOB  HEADERS *.hpp *.h )
 file( GLOB  CUDA_SRC  *.cu)
-SET (HW1_files main.cpp reference_calc.cpp compare.cpp)
+SET (HW1_files main.cpp reference_calc.cpp "../utils/compare.cpp")
 
 add_executable(problem_set_1 ${CUDA_SRC} ${HW1_files})
 

@@ -3,10 +3,10 @@
 
 # Don't ignore directories
 !Final/
-!"Lesson Code Snippets"/
-!"Lesson Slides"/
-!"Problem Sets"/
-!"Student Contributions"/
+!"lesson_code_snippets"/
+!"lesson_slides"/
+!"problem_sets"/
+!"student_contributions"/
 
 # This file
 !.gitignore

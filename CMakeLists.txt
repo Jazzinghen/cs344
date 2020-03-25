@@ -15,15 +15,15 @@ if(NOT DEFINED CMAKE_CUDA_STANDARD)
   set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 endif()
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED PATHS "C:\\Users\\Jazzinghen\\Tools\\opencv\\build")
 
-include_directories(${OpenCV_INCLUDE_DIRS} ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+include_directories(${OpenCV_INCLUDE_DIRS} ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} "problem_sets/utils")
 
 set (EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")
 
-add_subdirectory ("Problem Sets/Problem Set 1")
-add_subdirectory ("Problem Sets/Problem Set 2")
-add_subdirectory ("Problem Sets/Problem Set 3")
-add_subdirectory ("Problem Sets/Problem Set 4")
-add_subdirectory ("Problem Sets/Problem Set 5")
-add_subdirectory ("Problem Sets/Problem Set 6")
+add_subdirectory ("problem_sets/problem_set_1")
+add_subdirectory ("problem_sets/problem_set_2")
+add_subdirectory ("problem_sets/problem_set_3")
+add_subdirectory ("problem_sets/problem_set_4")
+add_subdirectory ("problem_sets/problem_set_5")
+add_subdirectory ("problem_sets/problem_set_6")
