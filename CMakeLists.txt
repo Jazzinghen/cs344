@@ -6,24 +6,29 @@
 ############################################################################
 
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
-project(cs344 LANGUAGES CUDA CXX)
+project(cs344
+    DESCRIPTION "Udacity's CS344 course on CUDA"
+    LANGUAGES CUDA CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+# Only do these if this is the main project, and not if it is included through add_subdirectory
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
-if(NOT DEFINED CMAKE_CUDA_STANDARD)
-  set(CMAKE_CUDA_STANDARD 11)
-  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_CXX_STANDARD 14)
+
+    # Let's add the local bin folder for executables output
+    set (EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")
+
+    
+    if(NOT DEFINED CMAKE_CUDA_STANDARD)
+      set(CMAKE_CUDA_STANDARD 14)
+      set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+    endif()
+
+    # Let's nicely support folders in IDE's
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
 find_package(OpenCV REQUIRED PATHS "C:\\Users\\Jazzinghen\\Tools\\opencv\\build")
 
-include_directories(${OpenCV_INCLUDE_DIRS} ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} "problem_sets/utils")
-
-set (EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin/")
-
-add_subdirectory ("problem_sets/problem_set_1")
-add_subdirectory ("problem_sets/problem_set_2")
-add_subdirectory ("problem_sets/problem_set_3")
-add_subdirectory ("problem_sets/problem_set_4")
-add_subdirectory ("problem_sets/problem_set_5")
-add_subdirectory ("problem_sets/problem_set_6")
+add_subdirectory ("problem_sets")

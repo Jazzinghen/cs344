@@ -2,11 +2,11 @@
 /*
 
 # Don't ignore directories
-!Final/
-!"lesson_code_snippets"/
-!"lesson_slides"/
-!"problem_sets"/
-!"student_contributions"/
+!final/
+!lesson_code_snippets/
+!lesson_slides/
+!problem_sets/
+!student_contributions/
 
 # This file
 !.gitignore

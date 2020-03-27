@@ -6,10 +6,7 @@
 #include <cuda_runtime.h>
 #include <string>
 
-cv::Mat imageRGBA;
-cv::Mat imageGrey;
-
-uchar4        *d_rgbaImage__;
+uchar4 *d_rgbaImage__;
 unsigned char *d_greyImage__;
 
 size_t numRows() { return imageRGBA.rows; }
@@ -22,13 +19,15 @@ size_t numCols() { return imageRGBA.cols; }
 //on both the host and device
 void preProcess(uchar4 **inputImage, unsigned char **greyImage,
                 uchar4 **d_rgbaImage, unsigned char **d_greyImage,
-                const std::string &filename) {
+                const std::string &filename)
+{
   //make sure the context initializes ok
   checkCudaErrors(cudaFree(0));
 
   cv::Mat image;
   image = cv::imread(filename.c_str(), cv::IMREAD_COLOR);
-  if (image.empty()) {
+  if (image.empty())
+  {
     std::cerr << "Couldn't open file: " << filename << std::endl;
     exit(1);
   }
@@ -40,13 +39,14 @@ void preProcess(uchar4 **inputImage, unsigned char **greyImage,
 
   //This shouldn't ever happen given the way the images are created
   //at least based upon my limited understanding of OpenCV, but better to check
-  if (!imageRGBA.isContinuous() || !imageGrey.isContinuous()) {
+  if (!imageRGBA.isContinuous() || !imageGrey.isContinuous())
+  {
     std::cerr << "Images aren't continuous!! Exiting." << std::endl;
     exit(1);
   }
 
   *inputImage = (uchar4 *)imageRGBA.ptr<unsigned char>(0);
-  *greyImage  = imageGrey.ptr<unsigned char>(0);
+  *greyImage = imageGrey.ptr<unsigned char>(0);
 
   const size_t numPixels = numRows() * numCols();
   //allocate memory on the device for both input and output
@@ -61,8 +61,9 @@ void preProcess(uchar4 **inputImage, unsigned char **greyImage,
   d_greyImage__ = *d_greyImage;
 }
 
-void postProcess(const std::string& output_file, unsigned char* data_ptr) {
-  cv::Mat output(numRows(), numCols(), CV_8UC1, (void*)data_ptr);
+void postProcess(const std::string &output_file, unsigned char *data_ptr)
+{
+  cv::Mat output(numRows(), numCols(), CV_8UC1, (void *)data_ptr);
 
   //output the image
   cv::imwrite(output_file.c_str(), output);
@@ -80,5 +81,4 @@ void generateReferenceImage(std::string input_filename, std::string output_filen
   cv::Mat reference = cv::imread(input_filename, cv::IMREAD_GRAYSCALE);
 
   cv::imwrite(output_filename, reference);
-
 }
