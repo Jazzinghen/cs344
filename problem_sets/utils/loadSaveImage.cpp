@@ -10,129 +10,143 @@
 //to ensure the memory is freed.  DO NOT COPY THIS AND USE IN PRODUCTION
 //CODE!!!
 void loadImageHDR(const std::string &filename,
-                  float **imagePtr,
-                  size_t *numRows, size_t *numCols)
+                  std::vector<float> &image_data,
+                  size_t &numRows, size_t &numCols)
 {
-  cv::Mat image = cv::imread(filename.c_str(), CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYDEPTH);
-  if (image.empty()) {
+  cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR | cv::IMREAD_ANYDEPTH);
+  if (image.empty())
+  {
     std::cerr << "Couldn't open file: " << filename << std::endl;
     exit(1);
   }
 
-  if (image.channels() != 3) {
+  if (image.channels() != 3)
+  {
     std::cerr << "Image must be color!" << std::endl;
     exit(1);
   }
 
-  if (!image.isContinuous()) {
+  if (!image.isContinuous())
+  {
     std::cerr << "Image isn't continuous!" << std::endl;
     exit(1);
   }
 
-  *imagePtr = new float[image.rows * image.cols * image.channels()];
+  image_data.clear();
+  image_data.reserve(image.rows * image.cols * image.channels());
 
-  float *cvPtr = image.ptr<float>(0);
-  for (size_t i = 0; i < image.rows * image.cols * image.channels(); ++i)
-    (*imagePtr)[i] = cvPtr[i];
+  // MEH
+  const float *image_ptr = image.ptr<float>(0);
 
-  *numRows = image.rows;
-  *numCols = image.cols;
+  std::copy(image_ptr, image_ptr + (image.rows * image.cols), image_data.begin());
+
+  numRows = image.rows;
+  numCols = image.cols;
 }
 
 void loadImageGrey(const std::string &filename,
-                   unsigned char **imagePtr,
-                   size_t *numRows, size_t *numCols)
+                   std::vector<unsigned char> image_data,
+                   size_t &numRows, size_t &numCols)
 {
-  cv::Mat image = cv::imread(filename.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-  if (image.empty()) {
+  cv::Mat image = cv::imread(filename, cv::IMREAD_GRAYSCALE);
+  if (image.empty())
+  {
     std::cerr << "Couldn't open file: " << filename << std::endl;
     exit(1);
   }
 
-  if (image.channels() != 1) {
+  if (image.channels() != 1)
+  {
     std::cerr << "Image must be greyscale!" << std::endl;
     exit(1);
   }
 
-  if (!image.isContinuous()) {
+  if (!image.isContinuous())
+  {
     std::cerr << "Image isn't continuous!" << std::endl;
     exit(1);
   }
 
-  *imagePtr = new unsigned char[image.rows * image.cols];
+  image_data.clear();
+  image_data.reserve(image.rows * image.cols);
 
-  unsigned char *cvPtr = image.ptr<unsigned char>(0);
-  for (size_t i = 0; i < image.rows * image.cols; ++i) {
-    (*imagePtr)[i] = cvPtr[i];
-  }
+  unsigned char *image_ptr = image.ptr<unsigned char>(0);
 
-  *numRows = image.rows;
-  *numCols = image.cols;
+  std::copy(image_ptr, image_ptr + (image.rows * image.cols), image_data.begin());
+
+  numRows = image.rows;
+  numCols = image.cols;
 }
+
 void loadImageRGBA(const std::string &filename,
-                   uchar4 **imagePtr,
-                   size_t *numRows, size_t *numCols)
+                   std::vector<uchar4> &image_data,
+                   size_t &numRows, size_t &numCols)
 {
-  cv::Mat image = cv::imread(filename.c_str(), CV_LOAD_IMAGE_COLOR);
-  if (image.empty()) {
+  cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR);
+  if (image.empty())
+  {
     std::cerr << "Couldn't open file: " << filename << std::endl;
     exit(1);
   }
 
-  if (image.channels() != 3) {
+  if (image.channels() != 3)
+  {
     std::cerr << "Image must be color!" << std::endl;
     exit(1);
   }
 
-  if (!image.isContinuous()) {
+  if (!image.isContinuous())
+  {
     std::cerr << "Image isn't continuous!" << std::endl;
     exit(1);
   }
 
   cv::Mat imageRGBA;
-  cv::cvtColor(image, imageRGBA, CV_BGR2RGBA);
+  cv::cvtColor(image, imageRGBA, cv::COLOR_BGR2RGBA);
 
-  *imagePtr = new uchar4[image.rows * image.cols];
+  image_data.clear();
+  image_data.reserve(image.rows * image.cols);
 
   unsigned char *cvPtr = imageRGBA.ptr<unsigned char>(0);
-  for (size_t i = 0; i < image.rows * image.cols; ++i) {
-    (*imagePtr)[i].x = cvPtr[4 * i + 0];
-    (*imagePtr)[i].y = cvPtr[4 * i + 1];
-    (*imagePtr)[i].z = cvPtr[4 * i + 2];
-    (*imagePtr)[i].w = cvPtr[4 * i + 3];
+  for (size_t i = 0; i < image.rows * image.cols; ++i)
+  {
+    image_data[i].x = cvPtr[4 * i + 0];
+    image_data[i].y = cvPtr[4 * i + 1];
+    image_data[i].z = cvPtr[4 * i + 2];
+    image_data[i].w = cvPtr[4 * i + 3];
   }
 
-  *numRows = image.rows;
-  *numCols = image.cols;
+  numRows = image.rows;
+  numCols = image.cols;
 }
 
-void saveImageRGBA(const uchar4* const image,
+void saveImageRGBA(const uchar4 *const image,
                    const size_t numRows, const size_t numCols,
                    const std::string &output_file)
 {
   int sizes[2];
-  sizes[0] = numRows;
-  sizes[1] = numCols;
+  sizes[0] = static_cast<int>(numRows);
+  sizes[1] = static_cast<int>(numCols);
   cv::Mat imageRGBA(2, sizes, CV_8UC4, (void *)image);
   cv::Mat imageOutputBGR;
-  cv::cvtColor(imageRGBA, imageOutputBGR, CV_RGBA2BGR);
+  cv::cvtColor(imageRGBA, imageOutputBGR, cv::COLOR_RGBA2BGR);
   //output the image
-  cv::imwrite(output_file.c_str(), imageOutputBGR);
+  cv::imwrite(output_file, imageOutputBGR);
 }
 
 //output an exr file
 //assumed to already be BGR
-void saveImageHDR(const float* const image,
+void saveImageHDR(const float *const image,
                   const size_t numRows, const size_t numCols,
                   const std::string &output_file)
 {
   int sizes[2];
-  sizes[0] = numRows;
-  sizes[1] = numCols;
+  sizes[0] = static_cast<int>(numRows);
+  sizes[1] = static_cast<int>(numCols);
 
   cv::Mat imageHDR(2, sizes, CV_32FC3, (void *)image);
 
   imageHDR = imageHDR * 255;
 
-  cv::imwrite(output_file.c_str(), imageHDR);
+  cv::imwrite(output_file, imageHDR);
 }

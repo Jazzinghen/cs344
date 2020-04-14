@@ -1,10 +1,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/opencv.hpp>
 
 #include "utils.h"
+#include "compare.h"
 
-void compareImages(std::string reference_filename, std::string test_filename, 
+bool compareImages(const std::string &reference_filename, const std::string &test_filename, const std::string &diff_filename,
                    bool useEpsCheck, double perPixelError, double globalError)
 {
   cv::Mat reference = cv::imread(reference_filename, -1);
@@ -24,19 +24,18 @@ void compareImages(std::string reference_filename, std::string test_filename,
 
   diff = diffSingleChannel.reshape(reference.channels(), 0);
 
-  cv::imwrite("HW1_differenceImage.png", diff);
+  cv::imwrite(diff_filename, diff);
+
   //OK, now we can start comparing values...
   unsigned char *referencePtr = reference.ptr<unsigned char>(0);
   unsigned char *testPtr = test.ptr<unsigned char>(0);
 
-  if (useEpsCheck) {
-    checkResultsEps(referencePtr, testPtr, reference.rows * reference.cols * reference.channels(), perPixelError, globalError);
+  if (useEpsCheck)
+  {
+    return checkResultsEps(referencePtr, testPtr, reference.rows * reference.cols * reference.channels(), perPixelError, globalError);
   }
   else
   {
-    checkResultsExact(referencePtr, testPtr, reference.rows * reference.cols * reference.channels());
+    return checkResultsExact(referencePtr, testPtr, reference.rows * reference.cols * reference.channels());
   }
-
-  std::cout << "PASS" << std::endl;
-  return;
 }
