@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 
@@ -17,11 +19,9 @@ class CudaDeviceImage
       , cols_(columns)
       , image_area_(rows_ * cols_)
     {
-        const auto m_result =
-          cudaMalloc(&container_, sizeof(container_type) * image_area_);
-        if (m_result != cudaError::cudaSuccess) {
-            throw cudaException(cudaGetErrorString(err), __FILE__, __LINE__);
-        }
+        checkCudaErrors(cudaMalloc(&container_, sizeof(container_type) * image_area_),
+                        __FILE__,
+                        __LINE__);
     }
 
     ~CudaDeviceImage()
@@ -31,7 +31,37 @@ class CudaDeviceImage
         };
     };
 
+    void clear()
+    {
+        checkCudaErrors(cudaMemset(container_, 0, image_area_ * sizeof(container_type)),
+                        __FILE__,
+                        __LINE__);
+    }
+
+    void copy_to(const container_type* from) { copy_to(from, image_area_); }
+
+    void copy_to(const container_type* from, size_t area)
+    {
+        checkCudaErrors(
+          cudaMemcpy(
+            container_, from, sizeof(container_type) * area, cudaMemcpyHostToDevice),
+          __FILE__,
+          __LINE__);
+    }
+
+    void copy_from(const container_type* to)
+    {
+        checkCudaErrors(cudaMemcpy(to,
+                                   container_,
+                                   sizeof(container_type) * image_area_,
+                                   cudaMemcpyDeviceToHost),
+                        __FILE__,
+                        __LINE__);
+    }
+
     container_type* get() { return container_; }
+
+    std::pair<uint32_t, uint32_t> dimensions() { return std::make_pair(rows_, cols_); }
 
   private:
     container_type* container_ = nullptr;

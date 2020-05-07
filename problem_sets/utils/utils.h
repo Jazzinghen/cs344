@@ -9,17 +9,15 @@
 #include <iomanip>
 #include <iostream>
 
-#define checkCudaErrors(val) check((val), #val, __FILE__, __LINE__)
+#include "cudaException.h"
 
 namespace cs344 {
-template<typename T>
-void
-check(T err, const char* const func, const char* const file, const int line)
+
+inline void
+checkCudaErrors(const cudaError& err, const char* const file, const int line)
 {
     if (err != cudaSuccess) {
-        std::cerr << "CUDA error at: " << file << ":" << line << std::endl;
-        std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
-        exit(1);
+        throw cudaException(cudaGetErrorString(err), file, line);
     }
 }
 
@@ -108,19 +106,4 @@ checkResultsAutodesk(const T* const ref,
         exit(1);
     }
 }
-
-const auto cuda_uchar4_device_alloc = [](size_t num_pixels) -> uchar4* {
-    void* device_location;
-    checkCudaErrors(cudaMalloc(&device_location, sizeof(uchar4) * num_pixels));
-    return reinterpret_cast<uchar4*>(device_location);
-};
-
-const auto cuda_uint8_t_device_alloc = [](size_t num_pixels) -> uint8_t* {
-    void* device_location;
-    checkCudaErrors(cudaMalloc(&device_location, sizeof(uint8_t) * num_pixels));
-    return reinterpret_cast<uint8_t*>(device_location);
-};
-
-const auto cuda_uchar4_deleter = [](uchar4* container) { cudaFree(container); };
-const auto cuda_uint8_t_deleter = [](uint8_t* container) { cudaFree(container); };
 } // namespace cs344

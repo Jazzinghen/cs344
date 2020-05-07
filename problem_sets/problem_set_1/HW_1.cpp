@@ -6,7 +6,8 @@
 #include <string>
 
 #include "HW_1.h"
-#include "student_function.h"
+#include "cudaDeviceImage.h"
+#include "cudaException.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -15,7 +16,7 @@ namespace cs344 {
 HW1::HW1(const std::string& input_filename)
 {
     // make sure the context initializes ok
-    checkCudaErrors(cudaFree(0));
+    checkCudaErrors(cudaFree(0), __FILE__, __LINE__);
 
     const cv::Mat tmp_img = cv::imread(input_filename, cv::IMREAD_COLOR);
     if (imageRGBA.empty()) {
@@ -40,37 +41,25 @@ HW1::execute_kernel()
 
     size_t num_pixels = imageRGBA.rows * imageRGBA.cols;
 
-    std::unique_ptr<uchar4, decltype(cuda_uchar4_deleter)> d_rgbaImage__(
-      cuda_uchar4_device_alloc(num_pixels), cuda_uchar4_deleter);
-    std::unique_ptr<uint8_t, decltype(cuda_uint8_t_deleter)> d_greyImage__(
-      cuda_uint8_t_device_alloc(num_pixels), cuda_uint8_t_deleter);
+    CudaDeviceImage<uchar4> d_rgbaImage(imageRGBA.rows, imageRGBA.cols);
+    CudaDeviceImage<uint8_t> d_greyImage(imageRGBA.rows, imageRGBA.cols);
 
     // Clean the memory for the grayscale image
-    checkCudaErrors(
-      cudaMemset(d_greyImage__.get(), 0, num_pixels * sizeof(unsigned char)));
+    d_greyImage.clear();
 
     const uchar4* inputImage = reinterpret_cast<uchar4*>(imageRGBA.ptr<uint8_t>(0));
     // copy input array to the GPU
-    checkCudaErrors(cudaMemcpy(d_rgbaImage__.get(),
-                               inputImage,
-                               sizeof(uchar4) * num_pixels,
-                               cudaMemcpyHostToDevice));
+    d_rgbaImage.copy_to(inputImage);
 
     GpuTimer timer;
     timer.Start();
     // call the students' code
-    your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage);
+    your_rgba_to_greyscale(d_rgbaImage, d_greyImage);
     timer.Stop();
     cudaDeviceSynchronize();
-    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaGetLastError(), __FILE__, __LINE__);
 
-    int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
-
-    if (err < 0) {
-        // Couldn't print! Probably the student closed stdout - bad news
-        std::cerr << "Couldn't print timing information! STDOUT Closed!" << std::endl;
-        exit(1);
-    }
+    std::cout << "Your code ran in: " << timer.Elapsed() << " msecs." << std::endl;
 
     checkCudaErrors(cudaMemcpy(h_greyImage,
                                d_greyImage,

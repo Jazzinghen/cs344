@@ -31,10 +31,12 @@
 // You should fill in the kernel as well as set the block and grid sizes
 // so that the entire image is processed.
 
+#include <cstdint>
 #include <cuda.h>
 #include <cuda_runtime.h>
 
 #include "HW_1.h"
+#include "cudaDeviceImage.h"
 #include "utils.h"
 
 namespace cs344 {
@@ -59,12 +61,10 @@ rgba_to_greyscale(const uchar4* const rgbaImage,
 }
 
 void
-HW1::your_rgba_to_greyscale(const uchar4* const h_rgbaImage,
-                            uchar4* const d_rgbaImage,
-                            unsigned char* const d_greyImage,
-                            size_t numRows,
-                            size_t numCols)
+HW1::your_rgba_to_greyscale(CudaDeviceImage<uchar4>& d_rgbaImage,
+                            CudaDeviceImage<uint8_t>& d_greyImage)
 {
+    const auto image_dimensions = d_rgbaImage.dimensions();
     // You must fill in the correct sizes for the blockSize and gridSize
     // currently only one block with one thread is being launched
     const dim3 blockSize(1, 1, 1); // TODO
@@ -73,6 +73,6 @@ HW1::your_rgba_to_greyscale(const uchar4* const h_rgbaImage,
       d_rgbaImage.get(), d_greyImage.get(), numRows, numCols);
 
     cudaDeviceSynchronize();
-    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaGetLastError(), __FILE__, __LINE__);
 }
 } // namespace cs344
