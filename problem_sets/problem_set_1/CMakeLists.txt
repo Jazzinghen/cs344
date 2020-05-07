@@ -8,7 +8,7 @@
 # collect source files
 
 SET(PROJ_HEADERS reference_calc.h HW_1.h)
-SET(CUDA_SRC student_func.cu)
+SET(CUDA_SRC student_function.cu)
 SET(HW1_files main.cpp reference_calc.cpp HW_1.cpp)
 
 add_executable(problem_set_1 ${CUDA_SRC} ${HW1_files} ${PROJ_HEADERS})

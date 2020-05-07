@@ -26,5 +26,11 @@ class HW1
     cv::Mat imageGrey;
 
     cv::Mat load_input_image(const std::string& input_filename);
+    // This function will be left as-is for compatibility
+    void your_rgba_to_greyscale(const uchar4* const h_rgbaImage,
+                                uchar4* const d_rgbaImage,
+                                uint8_t* const d_greyImage,
+                                size_t numRows,
+                                size_t numCols);
 };
 } // namespace cs344

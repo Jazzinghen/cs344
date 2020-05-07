@@ -6,6 +6,7 @@
 #include <string>
 
 #include "HW_1.h"
+#include "student_function.h"
 #include "timer.h"
 #include "utils.h"
 
@@ -58,7 +59,7 @@ HW1::execute_kernel()
     GpuTimer timer;
     timer.Start();
     // call the students' code
-    your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage, numRows(), numCols());
+    your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage);
     timer.Stop();
     cudaDeviceSynchronize();
     checkCudaErrors(cudaGetLastError());
@@ -71,7 +72,6 @@ HW1::execute_kernel()
         exit(1);
     }
 
-    size_t numPixels = numRows() * numCols();
     checkCudaErrors(cudaMemcpy(h_greyImage,
                                d_greyImage,
                                sizeof(unsigned char) * numPixels,

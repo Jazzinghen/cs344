@@ -11,10 +11,17 @@ set(HEADER_LIST
     "compare.h"
     "timer.h"
     "utils.h"
-    "loadSaveImage.h")
+    "loadSaveImage.h"
+    "cuda_device_image.h"
+    "cudaException.h")
+
+set(SRC_LIST
+    "compare.cpp"
+    "loadSaveImage.cpp"
+    "cuda_device_image.cpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(cs344_utils "compare.cpp" "loadSaveImage.cpp" ${HEADER_LIST})
+add_library(cs344_utils ${SRC_LIST} ${HEADER_LIST})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(cs344_utils PUBLIC  ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES} ${OpenCV_INCLUDE_DIRS})
